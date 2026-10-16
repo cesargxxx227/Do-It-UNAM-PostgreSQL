@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DO IT UNAM{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'editor/images/favicon.png' %}?v=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'editor/css/cuentas.css' %}?v=4">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{% url 'editor:index' %}" aria-label="Ir a Mis proyectos" title="Mis proyectos">
+            <img class="brand-logo" src="{% static 'editor/images/logo.png' %}?v=3" alt="DO IT UNAM" width="44" height="44">
+        </a>
+        {% if user.is_authenticated %}
+        <div class="account">
+            <span>{{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="secondary" type="submit">Cerrar sesión</button></form>
+        </div>
+        {% endif %}
+    </header>
+    <main class="page">{% block content %}{% endblock %}</main>
+</body>
+</html>

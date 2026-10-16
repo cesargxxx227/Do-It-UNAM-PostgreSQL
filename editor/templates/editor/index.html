@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ proyecto.nombre }} · DO IT UNAM</title>
+    <!-- Tailwind CSS para los estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuente Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'editor/images/favicon.png' %}?v=1">
+    <link rel="stylesheet" href="{% static 'editor/css/editor.css' %}?v=5">
+</head>
+<body class="h-screen flex flex-col bg-[#f3f4f6] overflow-hidden text-gray-700">
+
+    <!-- BARRA SUPERIOR (Navbar) -->
+    <header class="bg-white min-h-14 flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-b border-gray-200 shrink-0">
+        <div class="flex flex-wrap items-center gap-4 min-w-0">
+            <div class="flex items-center gap-2 text-blue-900 font-bold text-lg">
+                <i class="fa-solid fa-graduation-cap text-yellow-500"></i> DO IT UNAM
+            </div>
+            <a href="{% url 'editor:index' %}" class="projects-logo" aria-label="Ir a Mis proyectos" title="Mis proyectos">
+                <img src="{% static 'editor/images/logo.png' %}?v=3" alt="Mis proyectos" width="44" height="44">
+            </a>
+            <form id="project-form" method="post" action="{% url 'editor:guardar' proyecto.pk %}" class="project-form">
+                {% csrf_token %}
+                {{ form.objetos }}
+                {{ form.fondo }}
+                {{ form.duracion_frames }}
+                <div class="project-field">
+                    {{ form.nombre.label_tag }}
+                    {{ form.nombre }}
+                    {{ form.nombre.errors }}
+                </div>
+                <button type="submit" class="project-save">Guardar</button>
+            </form>
+        </div>
+        <div class="flex items-center gap-3">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}<button type="submit" class="text-sm text-blue-900 underline">Cerrar sesión</button>
+            </form>
+            <button class="bg-[#0b3b60] text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 hover:bg-blue-900">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i> Compartir
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600">
+                <i class="fa-solid fa-ellipsis"></i>
+            </button>
+        </div>
+    </header>
+    {% for message in messages %}
+    <div role="status" class="shrink-0 px-4 py-2 bg-green-50 text-green-800 text-sm">{{ message }}</div>
+    {% endfor %}
+    {{ form.objetos.errors }}
+    {{ form.duracion_frames.errors }}
+    {{ form.non_field_errors }}
+    <div id="save-status" role="status" class="shrink-0 px-4 py-1 text-sm text-gray-600">{% if form.errors %}Revisa los campos indicados; los cambios no se guardaron.{% endif %}</div>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- BARRA LATERAL IZQUIERDA -->
+        <aside class="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-6 shrink-0 z-10 shadow-sm">
+            <button id="text-tool" type="button" class="flex flex-col items-center gap-1 text-[#0b3b60] bg-blue-50 w-full py-2 border-l-4 border-[#0b3b60]">
+                <i class="fa-solid fa-font text-xl"></i>
+                <span class="text-[10px] font-medium">Texto</span>
+            </button>
+            <button id="images-tool" type="button" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2" aria-expanded="false" aria-controls="asset-panel">
+                <i class="fa-regular fa-image text-xl"></i>
+                <span class="text-[10px]">Imágenes</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                <span class="text-[10px]">IA</span>
+            </button>
+            <button id="elements-tool" type="button" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2" aria-expanded="false" aria-controls="asset-panel">
+                <i class="fa-solid fa-shapes text-xl"></i>
+                <span class="text-[10px]">Elementos</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2">
+                <i class="fa-solid fa-music text-xl"></i>
+                <span class="text-[10px]">Audio</span>
+            </button>
+            <button id="background-tool" type="button" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2" aria-expanded="false" aria-controls="asset-panel">
+                <i class="fa-solid fa-palette text-xl"></i>
+                <span class="text-[10px]">Fondos</span>
+            </button>
+            <button id="animation-tool" type="button" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800 w-full py-2" aria-expanded="false" aria-controls="asset-panel">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                <span class="text-[10px]">Animar</span>
+            </button>
+        </aside>
+
+        <section id="asset-panel" class="asset-panel" aria-label="Biblioteca de imágenes" hidden>
+            <header class="asset-panel-header">
+                <h2 id="asset-panel-title">Biblioteca</h2>
+                <button id="close-asset-panel" type="button" aria-label="Cerrar biblioteca">×</button>
+            </header>
+            <div class="asset-gallery" data-gallery="elementos" hidden>
+                <p>Selecciona un elemento para agregarlo al lienzo.</p>
+                <div class="asset-grid">
+                    {% for asset in elementos %}
+                    <button class="asset-choice" type="button" data-asset-path="{{ asset.ruta }}" data-asset-src="{% static 'editor/images/' %}{{ asset.ruta }}" aria-label="Agregar {{ asset.nombre }}">
+                        <img src="{% static 'editor/images/' %}{{ asset.ruta }}" alt="" loading="lazy">
+                        <span>{{ asset.nombre }}</span>
+                    </button>
+                    {% empty %}
+                    <p class="asset-empty">No hay elementos. Agrega imágenes a `editor/static/editor/images/elementos/`.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="asset-gallery" data-gallery="fondos" hidden>
+                <p>Selecciona un fondo para aplicarlo a la escena.</p>
+                <button id="clear-background" class="clear-background" type="button">Quitar fondo</button>
+                <div class="asset-grid">
+                    {% for asset in fondos %}
+                    <button class="asset-choice" type="button" data-asset-path="{{ asset.ruta }}" data-asset-src="{% static 'editor/images/' %}{{ asset.ruta }}" aria-label="Usar fondo {{ asset.nombre }}">
+                        <img src="{% static 'editor/images/' %}{{ asset.ruta }}" alt="" loading="lazy">
+                        <span>{{ asset.nombre }}</span>
+                    </button>
+                    {% empty %}
+                    <p class="asset-empty">No hay fondos. Agrega imágenes a `editor/static/editor/images/fondos/`.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="asset-gallery" data-gallery="animaciones" hidden>
+                <p id="animation-selection">Selecciona un texto o elemento para aplicarle una animación.</p>
+                <div class="animation-presets">
+                    <button class="animation-choice" type="button" data-animation="ninguna"><span>Sin animación</span><small>Mostrar estático</small></button>
+                    <button class="animation-choice" type="button" data-animation="aparecer"><span>Desvanecer</span><small>Aparece suavemente</small></button>
+                    <button class="animation-choice" type="button" data-animation="subir"><span>Subir</span><small>Entra desde abajo</small></button>
+                    <button class="animation-choice" type="button" data-animation="zoom"><span>Zoom</span><small>Aparece con escala</small></button>
+                    <button class="animation-choice" type="button" data-animation="girar"><span>Girar</span><small>Entra girando</small></button>
+                    <button class="animation-choice" type="button" data-animation="rebote"><span>Rebote</span><small>Entra con rebote</small></button>
+                </div>
+                <button id="preview-animation" class="preview-animation" type="button">Vista previa</button>
+                <p id="animation-status" role="status" aria-live="polite">Elige un objeto y un efecto.</p>
+            </div>
+        </section>
+
+        <!-- ÁREA CENTRAL DE TRABAJO -->
+        <div class="editor-layout">
+        <main class="editor-workspace flex-1 flex flex-col relative">
+            <div class="text-toolbar" aria-label="Herramientas de texto">
+                <button id="add-text" type="button">+ Agregar texto</button>
+                <fieldset id="object-tools" disabled>
+                    <legend class="sr-only">Formato del cuadro seleccionado</legend>
+                    <label>Fuente <select id="font-family"><option>Poppins</option><option>Arial</option></select></label>
+                    <label>Tamaño <input id="font-size" type="number" min="8" max="120" value="36"></label>
+                    <label>Color <input id="font-color" type="color" value="#ffffff"></label>
+                    <button id="bold" type="button" aria-label="Negrita" aria-pressed="false"><b>B</b></button>
+                    <button id="italic" type="button" aria-label="Cursiva" aria-pressed="false"><i>I</i></button>
+                    <button id="underline" type="button" aria-label="Subrayado" aria-pressed="false"><u>U</u></button>
+                    <label>Alinear <select id="text-align"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></label>
+                    <button id="edit-text" type="button">Editar</button>
+                    <button id="delete-text" type="button">Eliminar</button>
+                </fieldset>
+            </div>
+            <p class="editor-help">Agrega texto. Arrastra el cuadro para moverlo y su esquina para cambiar el tamaño. Doble clic para escribir; Escape para terminar.</p>
+            <div class="stage-area">
+                <div id="stage-viewport">
+                    <div id="stage" class="canvas-bg" data-asset-base="{% static 'editor/images/' %}" aria-label="Lienzo de animación" tabindex="0"></div>
+                </div>
+            </div>
+            <noscript><p>Activa JavaScript para agregar y editar cuadros de texto.</p></noscript>
+        </main>
+        </div>
+    </div>
+    <span id="object-count" class="sr-only"></span>
+    {{ objetos|json_script:"scene-data" }}
+    <script src="{% static 'editor/js/editor.js' %}?v=4" defer></script>
+</body>
+</html>

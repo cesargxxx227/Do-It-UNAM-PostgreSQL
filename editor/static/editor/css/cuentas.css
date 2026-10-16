@@ -1,0 +1,35 @@
+:root { color: #334155; background: #f3f4f6; font-family: 'Poppins', sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: #0b3b60; }
+.site-header { min-height: 64px; background: white; border-bottom: 1px solid #e5e7eb; padding: 14px 5%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { font-weight: 700; font-size: 20px; text-decoration: none; }
+.brand span { color: #926800; }
+.brand-logo { display: block; width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
+.account { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; overflow-wrap: anywhere; }
+.page { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
+h1 { color: #0b3b60; margin-bottom: 8px; }
+h2 { font-size: 18px; margin-top: 0; }
+.muted { color: #64748b; }
+.small { font-size: 13px; }
+.panel { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+.login-panel { max-width: 440px; margin: 64px auto; }
+.account-links { margin-top: 20px; }
+.field { margin-bottom: 18px; min-width: 0; }
+label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+input:not([type="hidden"]) { width: 100%; padding: 11px 12px; border: 1px solid #94a3b8; border-radius: 6px; font: inherit; }
+button { border: 1px solid #0b3b60; border-radius: 6px; background: #0b3b60; color: white; padding: 10px 16px; font: inherit; cursor: pointer; }
+button:hover { background: #164e78; }
+.secondary { background: white; color: #0b3b60; }
+.secondary:hover { background: #eff6ff; }
+:focus-visible { outline: 3px solid #ca8a04; outline-offset: 3px; }
+.errorlist { color: #b91c1c; padding-left: 20px; font-size: 14px; }
+.create-form { display: flex; align-items: flex-start; gap: 16px; }
+.create-form .field { flex: 1; margin-bottom: 0; }
+.create-form button { margin-top: 27px; }
+.projects { margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 18px; }
+.project-card { overflow-wrap: anywhere; }
+.project-card h2 a { text-decoration: none; }
+.open-link { font-weight: 500; }
+.empty { grid-column: 1 / -1; text-align: center; }
+@media (max-width: 600px) { .create-form { display: block; } .create-form button { margin-top: 16px; } .page { padding: 0 16px; } }

@@ -1,0 +1,25 @@
+{% extends 'editor/base.html' %}
+{% block title %}Mis proyectos · DO IT UNAM{% endblock %}
+{% block content %}
+<h1>Mis proyectos</h1>
+<p class="muted">Crea un proyecto o continúa donde lo dejaste.</p>
+<section class="panel">
+    <h2>Nuevo proyecto</h2>
+    <form method="post" action="{% url 'editor:crear' %}" class="create-form">
+        {% csrf_token %}
+        <div class="field">{{ form.nombre.label_tag }}{{ form.nombre }}{{ form.nombre.errors }}</div>
+        <button type="submit">Crear proyecto</button>
+    </form>
+</section>
+<section class="projects" aria-label="Proyectos guardados">
+    {% for proyecto in proyectos %}
+    <article class="panel project-card">
+        <h2><a href="{% url 'editor:detalle' proyecto.pk %}">{{ proyecto.nombre }}</a></h2>
+        <p class="muted small">Modificado: {{ proyecto.modificado|date:"d/m/Y H:i" }}</p>
+        <a class="open-link" href="{% url 'editor:detalle' proyecto.pk %}">Abrir proyecto →</a>
+    </article>
+    {% empty %}
+    <div class="panel empty"><h2>Aún no tienes proyectos</h2><p class="muted">Escribe un nombre arriba para crear el primero.</p></div>
+    {% endfor %}
+</section>
+{% endblock %}

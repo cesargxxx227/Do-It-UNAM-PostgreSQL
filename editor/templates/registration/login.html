@@ -1,0 +1,18 @@
+{% extends 'editor/base.html' %}
+{% block title %}Iniciar sesión · DO IT UNAM{% endblock %}
+{% block content %}
+<section class="panel login-panel">
+    <h1>Iniciar sesión</h1>
+    <p class="muted">Entra para continuar con tus proyectos.</p>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+        {% endfor %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit">Entrar</button>
+    </form>
+    <p class="muted small account-links">¿Aún no tienes cuenta? <a href="{% url 'editor:registro' %}">Regístrate aquí</a>.</p>
+</section>
+{% endblock %}
